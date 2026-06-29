@@ -1,3 +1,5 @@
+<p align="center"><img src=".github/hero.svg" alt="o11y-mcp" width="880"></p>
+
 # SigNoz MCP Server
 
 [![Go Version](https://img.shields.io/badge/Go-1.25+-blue.svg)](https://golang.org)
