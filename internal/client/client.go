@@ -12,25 +12,25 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/SigNoz/signoz-mcp-server/pkg/types"
+	"github.com/hanzoai/o11y-mcp/pkg/types"
 )
 
 const (
-	SignozApiKey = "SIGNOZ-API-KEY"
+	EnvAPIKey = "SIGNOZ-API-KEY"
 	ContentType  = "Content-Type"
 )
 
-type SigNoz struct {
+type Client struct {
 	baseURL string
 	apiKey  string
 	logger  *zap.Logger
 }
 
-func NewClient(log *zap.Logger, url, apiKey string) *SigNoz {
-	return &SigNoz{logger: log, baseURL: url, apiKey: apiKey}
+func NewClient(log *zap.Logger, url, apiKey string) *Client {
+	return &Client{logger: log, baseURL: url, apiKey: apiKey}
 }
 
-func (s *SigNoz) ListMetricKeys(ctx context.Context) (json.RawMessage, error) {
+func (s *Client) ListMetricKeys(ctx context.Context) (json.RawMessage, error) {
 	url := fmt.Sprintf("%s/api/v1/metrics/filters/keys", s.baseURL)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -39,13 +39,13 @@ func (s *SigNoz) ListMetricKeys(ctx context.Context) (json.RawMessage, error) {
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	defer cancel()
 	req = req.WithContext(ctx)
 
-	s.logger.Debug("Making request to SigNoz API", zap.String("method", "GET"), zap.String("endpoint", "/api/v1/metrics/filters/keys"))
+	s.logger.Debug("Making request to Client API", zap.String("method", "GET"), zap.String("endpoint", "/api/v1/metrics/filters/keys"))
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -73,7 +73,7 @@ func (s *SigNoz) ListMetricKeys(ctx context.Context) (json.RawMessage, error) {
 	return body, nil
 }
 
-func (s *SigNoz) SearchMetricByText(ctx context.Context, searchText string) (json.RawMessage, error) {
+func (s *Client) SearchMetricByText(ctx context.Context, searchText string) (json.RawMessage, error) {
 	url := fmt.Sprintf("%s/api/v3/autocomplete/aggregate_attributes?dataSource=metrics&searchText=%s", s.baseURL, searchText)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -82,7 +82,7 @@ func (s *SigNoz) SearchMetricByText(ctx context.Context, searchText string) (jso
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	defer cancel()
@@ -116,7 +116,7 @@ func (s *SigNoz) SearchMetricByText(ctx context.Context, searchText string) (jso
 	return body, nil
 }
 
-func (s *SigNoz) ListAlerts(ctx context.Context) (json.RawMessage, error) {
+func (s *Client) ListAlerts(ctx context.Context) (json.RawMessage, error) {
 	url := fmt.Sprintf("%s/api/v1/alerts", s.baseURL)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -125,7 +125,7 @@ func (s *SigNoz) ListAlerts(ctx context.Context) (json.RawMessage, error) {
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	defer cancel()
@@ -159,7 +159,7 @@ func (s *SigNoz) ListAlerts(ctx context.Context) (json.RawMessage, error) {
 	return body, nil
 }
 
-func (s *SigNoz) GetAlertByRuleID(ctx context.Context, ruleID string) (json.RawMessage, error) {
+func (s *Client) GetAlertByRuleID(ctx context.Context, ruleID string) (json.RawMessage, error) {
 	url := fmt.Sprintf("%s/api/v1/rules/%s", s.baseURL, ruleID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -167,7 +167,7 @@ func (s *SigNoz) GetAlertByRuleID(ctx context.Context, ruleID string) (json.RawM
 		return nil, fmt.Errorf("failed to create request: %w", err)
 	}
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	defer cancel()
@@ -203,7 +203,7 @@ func (s *SigNoz) GetAlertByRuleID(ctx context.Context, ruleID string) (json.RawM
 // ListDashboards filters data as it returns too much of data even the ui tags
 // so we filter and only return required information which might help to get
 // detailed info of a dashboard.
-func (s *SigNoz) ListDashboards(ctx context.Context) (json.RawMessage, error) {
+func (s *Client) ListDashboards(ctx context.Context) (json.RawMessage, error) {
 	url := fmt.Sprintf("%s/api/v1/dashboards", s.baseURL)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -212,7 +212,7 @@ func (s *SigNoz) ListDashboards(ctx context.Context) (json.RawMessage, error) {
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	defer cancel()
@@ -300,7 +300,7 @@ func (s *SigNoz) ListDashboards(ctx context.Context) (json.RawMessage, error) {
 	return body, nil
 }
 
-func (s *SigNoz) GetDashboard(ctx context.Context, uuid string) (json.RawMessage, error) {
+func (s *Client) GetDashboard(ctx context.Context, uuid string) (json.RawMessage, error) {
 	url := fmt.Sprintf("%s/api/v1/dashboards/%s", s.baseURL, uuid)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -309,7 +309,7 @@ func (s *SigNoz) GetDashboard(ctx context.Context, uuid string) (json.RawMessage
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	defer cancel()
@@ -344,7 +344,7 @@ func (s *SigNoz) GetDashboard(ctx context.Context, uuid string) (json.RawMessage
 	return body, nil
 }
 
-func (s *SigNoz) ListServices(ctx context.Context, start, end string) (json.RawMessage, error) {
+func (s *Client) ListServices(ctx context.Context, start, end string) (json.RawMessage, error) {
 	url := fmt.Sprintf("%s/api/v1/services", s.baseURL)
 
 	payload := map[string]string{
@@ -359,7 +359,7 @@ func (s *SigNoz) ListServices(ctx context.Context, start, end string) (json.RawM
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	s.logger.Debug("Fetching services from SigNoz", zap.String("start", start), zap.String("end", end))
 
@@ -393,7 +393,7 @@ func (s *SigNoz) ListServices(ctx context.Context, start, end string) (json.RawM
 	return body, nil
 }
 
-func (s *SigNoz) GetServiceTopOperations(ctx context.Context, start, end, service string, tags json.RawMessage) (json.RawMessage, error) {
+func (s *Client) GetServiceTopOperations(ctx context.Context, start, end, service string, tags json.RawMessage) (json.RawMessage, error) {
 	url := fmt.Sprintf("%s/api/v1/service/top_operations", s.baseURL)
 
 	payload := map[string]any{
@@ -410,7 +410,7 @@ func (s *SigNoz) GetServiceTopOperations(ctx context.Context, start, end, servic
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	s.logger.Debug("Fetching service top operations", zap.String("start", start), zap.String("end", end), zap.String("service", service))
 
@@ -444,7 +444,7 @@ func (s *SigNoz) GetServiceTopOperations(ctx context.Context, start, end, servic
 	return body, nil
 }
 
-func (s *SigNoz) QueryBuilderV5(ctx context.Context, body []byte) (json.RawMessage, error) {
+func (s *Client) QueryBuilderV5(ctx context.Context, body []byte) (json.RawMessage, error) {
 	url := fmt.Sprintf("%s/api/v5/query_range", s.baseURL)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(body))
@@ -453,7 +453,7 @@ func (s *SigNoz) QueryBuilderV5(ctx context.Context, body []byte) (json.RawMessa
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	defer cancel()
@@ -484,7 +484,7 @@ func (s *SigNoz) QueryBuilderV5(ctx context.Context, body []byte) (json.RawMessa
 	return b, nil
 }
 
-func (s *SigNoz) GetAlertHistory(ctx context.Context, ruleID string, req types.AlertHistoryRequest) (json.RawMessage, error) {
+func (s *Client) GetAlertHistory(ctx context.Context, ruleID string, req types.AlertHistoryRequest) (json.RawMessage, error) {
 	url := fmt.Sprintf("%s/api/v1/rules/%s/history/timeline", s.baseURL, ruleID)
 	// includes ruleid to get history
 	// eg: /api/v1/rules/<ruleID>/history/timeline
@@ -500,7 +500,7 @@ func (s *SigNoz) GetAlertHistory(ctx context.Context, ruleID string, req types.A
 	}
 
 	httpReq.Header.Set(ContentType, "application/json")
-	httpReq.Header.Set(SignozApiKey, s.apiKey)
+	httpReq.Header.Set(EnvAPIKey, s.apiKey)
 
 	s.logger.Debug("sending request", zap.String("url", url), zap.ByteString("body", reqBody))
 
@@ -508,7 +508,7 @@ func (s *SigNoz) GetAlertHistory(ctx context.Context, ruleID string, req types.A
 	defer cancel()
 	httpReq = httpReq.WithContext(ctx)
 
-	s.logger.Debug("Making request to SigNoz API",
+	s.logger.Debug("Making request to Client API",
 		zap.String("method", "POST"),
 		zap.String("endpoint", fmt.Sprintf("/api/v1/rules/%s/history/timeline", ruleID)))
 
@@ -540,7 +540,7 @@ func (s *SigNoz) GetAlertHistory(ctx context.Context, ruleID string, req types.A
 	return body, nil
 }
 
-func (s *SigNoz) ListLogViews(ctx context.Context) (json.RawMessage, error) {
+func (s *Client) ListLogViews(ctx context.Context) (json.RawMessage, error) {
 	url := fmt.Sprintf("%s/api/v1/explorer/views?sourcePage=logs", s.baseURL)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -549,7 +549,7 @@ func (s *SigNoz) ListLogViews(ctx context.Context) (json.RawMessage, error) {
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	defer cancel()
@@ -584,7 +584,7 @@ func (s *SigNoz) ListLogViews(ctx context.Context) (json.RawMessage, error) {
 	return body, nil
 }
 
-func (s *SigNoz) GetLogView(ctx context.Context, viewID string) (json.RawMessage, error) {
+func (s *Client) GetLogView(ctx context.Context, viewID string) (json.RawMessage, error) {
 	url := fmt.Sprintf("%s/api/v1/explorer/views/%s", s.baseURL, viewID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -593,7 +593,7 @@ func (s *SigNoz) GetLogView(ctx context.Context, viewID string) (json.RawMessage
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	defer cancel()
@@ -628,7 +628,7 @@ func (s *SigNoz) GetLogView(ctx context.Context, viewID string) (json.RawMessage
 	return body, nil
 }
 
-func (s *SigNoz) GetTraceFieldValues(ctx context.Context, fieldName string, searchText string) (json.RawMessage, error) {
+func (s *Client) GetTraceFieldValues(ctx context.Context, fieldName string, searchText string) (json.RawMessage, error) {
 	url := fmt.Sprintf("%s/api/v1/fields/values?signal=traces&name=%s&searchText=%s&metricName=&source=meter", s.baseURL, fieldName, searchText)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -637,7 +637,7 @@ func (s *SigNoz) GetTraceFieldValues(ctx context.Context, fieldName string, sear
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	defer cancel()
@@ -672,7 +672,7 @@ func (s *SigNoz) GetTraceFieldValues(ctx context.Context, fieldName string, sear
 	return body, nil
 }
 
-func (s *SigNoz) GetTraceAvailableFields(ctx context.Context, searchText string) (json.RawMessage, error) {
+func (s *Client) GetTraceAvailableFields(ctx context.Context, searchText string) (json.RawMessage, error) {
 	encodedSearchText := url.QueryEscape(searchText)
 	urlStr := fmt.Sprintf("%s/api/v3/autocomplete/attribute_keys?aggregateOperator=noop&searchText=%s&dataSource=traces&aggregateAttribute=&tagType=", s.baseURL, encodedSearchText)
 
@@ -682,7 +682,7 @@ func (s *SigNoz) GetTraceAvailableFields(ctx context.Context, searchText string)
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	defer cancel()
@@ -717,7 +717,7 @@ func (s *SigNoz) GetTraceAvailableFields(ctx context.Context, searchText string)
 	return body, nil
 }
 
-func (s *SigNoz) GetLogsAvailableFields(ctx context.Context, searchText string) (json.RawMessage, error) {
+func (s *Client) GetLogsAvailableFields(ctx context.Context, searchText string) (json.RawMessage, error) {
 	encodedSearchText := url.QueryEscape(searchText)
 	urlStr := fmt.Sprintf("%s/api/v3/filter_suggestions?searchText=%s&dataSource=logs&existingFilter=e30", s.baseURL, encodedSearchText)
 
@@ -727,7 +727,7 @@ func (s *SigNoz) GetLogsAvailableFields(ctx context.Context, searchText string) 
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	defer cancel()
@@ -762,7 +762,7 @@ func (s *SigNoz) GetLogsAvailableFields(ctx context.Context, searchText string) 
 	return body, nil
 }
 
-func (s *SigNoz) GetMetricsAvailableFields(ctx context.Context, searchText string) (json.RawMessage, error) {
+func (s *Client) GetMetricsAvailableFields(ctx context.Context, searchText string) (json.RawMessage, error) {
 	encodedSearchText := url.QueryEscape(searchText)
 	urlStr := fmt.Sprintf("%s/api/v3/autocomplete/aggregate_attributes?aggregateOperator=avg&searchText=%s&dataSource=metrics", s.baseURL, encodedSearchText)
 
@@ -772,7 +772,7 @@ func (s *SigNoz) GetMetricsAvailableFields(ctx context.Context, searchText strin
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	defer cancel()
@@ -807,7 +807,7 @@ func (s *SigNoz) GetMetricsAvailableFields(ctx context.Context, searchText strin
 	return body, nil
 }
 
-func (s *SigNoz) GetLogsFieldValues(ctx context.Context, fieldName string, searchText string) (json.RawMessage, error) {
+func (s *Client) GetLogsFieldValues(ctx context.Context, fieldName string, searchText string) (json.RawMessage, error) {
 	encodedFieldName := url.QueryEscape(fieldName)
 	encodedSearchText := url.QueryEscape(searchText)
 	urlStr := fmt.Sprintf("%s/api/v3/autocomplete/attribute_values?aggregateOperator=noop&dataSource=logs&aggregateAttribute=&attributeKey=%s&searchText=%s&filterAttributeKeyDataType=string&tagType=resource", s.baseURL, encodedFieldName, encodedSearchText)
@@ -818,7 +818,7 @@ func (s *SigNoz) GetLogsFieldValues(ctx context.Context, fieldName string, searc
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	defer cancel()
@@ -853,7 +853,7 @@ func (s *SigNoz) GetLogsFieldValues(ctx context.Context, fieldName string, searc
 	return body, nil
 }
 
-func (s *SigNoz) GetMetricsFieldValues(ctx context.Context, fieldName string, searchText string) (json.RawMessage, error) {
+func (s *Client) GetMetricsFieldValues(ctx context.Context, fieldName string, searchText string) (json.RawMessage, error) {
 	encodedFieldName := url.QueryEscape(fieldName)
 	encodedSearchText := url.QueryEscape(searchText)
 	urlStr := fmt.Sprintf("%s/api/v1/fields/keys?signal=metrics&metricName=%s&searchText=%s&fieldContext=&fieldDataType=&source=", s.baseURL, encodedFieldName, encodedSearchText)
@@ -864,7 +864,7 @@ func (s *SigNoz) GetMetricsFieldValues(ctx context.Context, fieldName string, se
 	}
 
 	req.Header.Set(ContentType, "application/json")
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 
 	ctx, cancel := context.WithTimeout(ctx, 600*time.Second)
 	defer cancel()
@@ -899,7 +899,7 @@ func (s *SigNoz) GetMetricsFieldValues(ctx context.Context, fieldName string, se
 	return body, nil
 }
 
-func (s *SigNoz) GetTraceDetails(ctx context.Context, traceID string, includeSpans bool, startTime, endTime int64) (json.RawMessage, error) {
+func (s *Client) GetTraceDetails(ctx context.Context, traceID string, includeSpans bool, startTime, endTime int64) (json.RawMessage, error) {
 	if startTime == 0 || endTime == 0 {
 		return nil, fmt.Errorf("start and end time parameters are required")
 	}
@@ -916,7 +916,7 @@ func (s *SigNoz) GetTraceDetails(ctx context.Context, traceID string, includeSpa
 	return s.QueryBuilderV5(ctx, queryJSON)
 }
 
-func (s *SigNoz) GetTraceErrorAnalysis(ctx context.Context, startTime, endTime int64, serviceName string) (json.RawMessage, error) {
+func (s *Client) GetTraceErrorAnalysis(ctx context.Context, startTime, endTime int64, serviceName string) (json.RawMessage, error) {
 	filterExpression := "hasError = true"
 	if serviceName != "" {
 		filterExpression += fmt.Sprintf(" AND service.name in ['%s']", serviceName)
@@ -932,7 +932,7 @@ func (s *SigNoz) GetTraceErrorAnalysis(ctx context.Context, startTime, endTime i
 	return s.QueryBuilderV5(ctx, queryJSON)
 }
 
-func (s *SigNoz) GetTraceSpanHierarchy(ctx context.Context, traceID string, startTime, endTime int64) (json.RawMessage, error) {
+func (s *Client) GetTraceSpanHierarchy(ctx context.Context, traceID string, startTime, endTime int64) (json.RawMessage, error) {
 	if startTime == 0 || endTime == 0 {
 		return nil, fmt.Errorf("start and end time parameters are required")
 	}
@@ -948,7 +948,7 @@ func (s *SigNoz) GetTraceSpanHierarchy(ctx context.Context, traceID string, star
 	return s.QueryBuilderV5(ctx, queryJSON)
 }
 
-func (s *SigNoz) CreateDashboard(ctx context.Context, dashboard types.Dashboard) (json.RawMessage, error) {
+func (s *Client) CreateDashboard(ctx context.Context, dashboard types.Dashboard) (json.RawMessage, error) {
 	url := fmt.Sprintf("%s/api/v1/dashboards", s.baseURL)
 
 	dashboardJSON, err := json.Marshal(dashboard)
@@ -961,7 +961,7 @@ func (s *SigNoz) CreateDashboard(ctx context.Context, dashboard types.Dashboard)
 		return nil, fmt.Errorf("new request: %w", err)
 	}
 
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 	req.Header.Set(ContentType, "application/json")
 
 	timeoutCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
@@ -988,7 +988,7 @@ func (s *SigNoz) CreateDashboard(ctx context.Context, dashboard types.Dashboard)
 	return body, nil
 }
 
-func (s *SigNoz) UpdateDashboard(ctx context.Context, id string, dashboard types.Dashboard) error {
+func (s *Client) UpdateDashboard(ctx context.Context, id string, dashboard types.Dashboard) error {
 	url := fmt.Sprintf("%s/api/v1/dashboards/%s", s.baseURL, id)
 
 	dashboardJSON, err := json.Marshal(dashboard)
@@ -1001,7 +1001,7 @@ func (s *SigNoz) UpdateDashboard(ctx context.Context, id string, dashboard types
 		return fmt.Errorf("new request: %w", err)
 	}
 
-	req.Header.Set(SignozApiKey, s.apiKey)
+	req.Header.Set(EnvAPIKey, s.apiKey)
 	req.Header.Set(ContentType, "application/json")
 
 	timeoutCtx, cancel := context.WithTimeout(ctx, 30*time.Second)

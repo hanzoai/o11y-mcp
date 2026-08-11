@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 
-	"github.com/SigNoz/signoz-mcp-server/pkg/types"
+	"github.com/hanzoai/o11y-mcp/pkg/types"
 )
 
 func TestGetAlertByRuleID(t *testing.T) {

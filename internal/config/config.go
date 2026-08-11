@@ -15,8 +15,8 @@ type Config struct {
 }
 
 const (
-	SignozURL     = "SIGNOZ_URL"
-	SignozApiKey  = "SIGNOZ_API_KEY"
+	EnvURL     = "SIGNOZ_URL"
+	EnvAPIKey  = "SIGNOZ_API_KEY"
 	LogLevel      = "LOG_LEVEL"
 	TransportMode = "TRANSPORT_MODE"
 	MCPPort       = "MCP_SERVER_PORT"
@@ -24,10 +24,10 @@ const (
 
 func LoadConfig() (*Config, error) {
 	// Trim trailing slash from URL to prevent double-slash issues in API paths
-	url := strings.TrimSuffix(getEnv(SignozURL, ""), "/")
+	url := strings.TrimSuffix(getEnv(EnvURL, ""), "/")
 	return &Config{
 		URL:           url,
-		APIKey:        getEnv(SignozApiKey, ""),
+		APIKey:        getEnv(EnvAPIKey, ""),
 		LogLevel:      getEnv(LogLevel, "info"),
 		TransportMode: getEnv(TransportMode, "stdio"),
 		Port:          getEnv(MCPPort, "8000"),

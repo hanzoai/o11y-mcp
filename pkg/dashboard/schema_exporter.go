@@ -6,7 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	schemamigrator "github.com/SigNoz/signoz-otel-collector/cmd/signozschemamigrator/schema_migrator"
+	schemamigrator "github.com/hanzoai/otel-collector/cmd/o11yschemamigrator/schema_migrator"
 )
 
 // this program exports the latest clickhouse schema used by otel collector

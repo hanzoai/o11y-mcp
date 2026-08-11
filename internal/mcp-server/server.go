@@ -8,9 +8,9 @@ import (
 	"github.com/mark3labs/mcp-go/server"
 	"go.uber.org/zap"
 
-	"github.com/SigNoz/signoz-mcp-server/internal/config"
-	"github.com/SigNoz/signoz-mcp-server/internal/handler/tools"
-	"github.com/SigNoz/signoz-mcp-server/pkg/util"
+	"github.com/hanzoai/o11y-mcp/internal/config"
+	"github.com/hanzoai/o11y-mcp/internal/handler/tools"
+	"github.com/hanzoai/o11y-mcp/pkg/util"
 )
 
 type MCPServer struct {

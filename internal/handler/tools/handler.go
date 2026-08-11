@@ -12,36 +12,36 @@ import (
 	"github.com/mark3labs/mcp-go/server"
 	"go.uber.org/zap"
 
-	signozclient "github.com/SigNoz/signoz-mcp-server/internal/client"
-	"github.com/SigNoz/signoz-mcp-server/pkg/dashboard"
-	"github.com/SigNoz/signoz-mcp-server/pkg/paginate"
-	"github.com/SigNoz/signoz-mcp-server/pkg/timeutil"
-	"github.com/SigNoz/signoz-mcp-server/pkg/types"
-	"github.com/SigNoz/signoz-mcp-server/pkg/util"
+	o11yclient "github.com/hanzoai/o11y-mcp/internal/client"
+	"github.com/hanzoai/o11y-mcp/pkg/dashboard"
+	"github.com/hanzoai/o11y-mcp/pkg/paginate"
+	"github.com/hanzoai/o11y-mcp/pkg/timeutil"
+	"github.com/hanzoai/o11y-mcp/pkg/types"
+	"github.com/hanzoai/o11y-mcp/pkg/util"
 )
 
 type Handler struct {
-	client      *signozclient.SigNoz
+	client      *o11yclient.Client
 	logger      *zap.Logger
-	signozURL   string
-	clientCache map[string]*signozclient.SigNoz
+	o11yURL   string
+	clientCache map[string]*o11yclient.Client
 	cacheMutex  sync.RWMutex
 }
 
-func NewHandler(log *zap.Logger, client *signozclient.SigNoz, signozURL string) *Handler {
+func NewHandler(log *zap.Logger, client *o11yclient.Client, o11yURL string) *Handler {
 	return &Handler{
 		client:      client,
 		logger:      log,
-		signozURL:   signozURL,
-		clientCache: make(map[string]*signozclient.SigNoz),
+		o11yURL:   o11yURL,
+		clientCache: make(map[string]*o11yclient.Client),
 	}
 }
 
 // getClient returns the appropriate client based on the context
 // If an API key is found in the context, it returns a cached client with that key
 // Otherwise, it returns the default client
-func (h *Handler) GetClient(ctx context.Context) *signozclient.SigNoz {
-	if apiKey, ok := util.GetAPIKey(ctx); ok && apiKey != "" && h.signozURL != "" {
+func (h *Handler) GetClient(ctx context.Context) *o11yclient.Client {
+	if apiKey, ok := util.GetAPIKey(ctx); ok && apiKey != "" && h.o11yURL != "" {
 		// Check cache first
 		h.cacheMutex.RLock()
 		if cachedClient, exists := h.clientCache[apiKey]; exists {
@@ -59,7 +59,7 @@ func (h *Handler) GetClient(ctx context.Context) *signozclient.SigNoz {
 		}
 
 		h.logger.Debug("Creating client with API key from context")
-		newClient := signozclient.NewClient(h.logger, h.signozURL, apiKey)
+		newClient := o11yclient.NewClient(h.logger, h.o11yURL, apiKey)
 		h.clientCache[apiKey] = newClient
 		return newClient
 	}

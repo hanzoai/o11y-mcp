@@ -6,8 +6,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/SigNoz/signoz-mcp-server/pkg/timeutil"
-	"github.com/SigNoz/signoz-mcp-server/pkg/types"
+	"github.com/hanzoai/o11y-mcp/pkg/timeutil"
+	"github.com/hanzoai/o11y-mcp/pkg/types"
 )
 
 var validAggregations = map[string]bool{

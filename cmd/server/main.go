@@ -6,12 +6,12 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/SigNoz/signoz-mcp-server/internal/client"
-	"github.com/SigNoz/signoz-mcp-server/internal/config"
-	"github.com/SigNoz/signoz-mcp-server/internal/handler/tools"
-	"github.com/SigNoz/signoz-mcp-server/internal/logger"
-	mcpserver "github.com/SigNoz/signoz-mcp-server/internal/mcp-server"
-	"github.com/SigNoz/signoz-mcp-server/pkg/dashboard"
+	"github.com/hanzoai/o11y-mcp/internal/client"
+	"github.com/hanzoai/o11y-mcp/internal/config"
+	"github.com/hanzoai/o11y-mcp/internal/handler/tools"
+	"github.com/hanzoai/o11y-mcp/internal/logger"
+	mcpserver "github.com/hanzoai/o11y-mcp/internal/mcp-server"
+	"github.com/hanzoai/o11y-mcp/pkg/dashboard"
 )
 
 func main() {
