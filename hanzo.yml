@@ -1,0 +1,18 @@
+# Canonical CI/CD config for hanzoai/o11y-mcp — read by the hanzoai/ci
+# reusable (.hanzo/workflows/cicd.yml) and by platform.hanzo.ai.
+#
+# An MCP server over the o11y query API. The gate compiles the module, vets
+# it and runs the suites; the reusable provisions Go from the go directive in
+# go.mod, so nothing here pins a version that could drift from it.
+#
+# No `images:`: the image this repo builds today is published by the upstream
+# project's own release plane, not from here, and declaring one would stand up
+# a second copy of it under a name nothing consumes.
+
+test:
+  - name: build-and-test
+    run: |
+      set -euo pipefail
+      go build ./...
+      go vet ./...
+      go test ./...
