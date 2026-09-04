@@ -26,28 +26,16 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
 LABEL io.modelcontextprotocol.server.name="io.github.SigNoz/signoz-mcp-server"
 
 # Final stage
-FROM alpine:latest
 
-# Install ca-certificates
-RUN apk --no-cache add ca-certificates
+# One directory in an empty image: the static binary and the files it reads;
+# nothing else is present to run, so nothing else can be run.
+FROM alpine:3.22 AS root
+RUN apk add --no-cache ca-certificates tzdata
 
-# Create non-root user for security
-RUN addgroup -g 1001 -S appgroup && \
-    adduser -u 1001 -S appuser -G appgroup
-
-WORKDIR /app
-
-# Copy the binary from builder stage
-COPY --from=builder /app/signoz-mcp-server .
-
-# Change ownership to non-root user
-RUN chown -R appuser:appgroup /app
-
-# Switch to non-root user
-USER appuser
-
-# Expose port
+FROM scratch
+COPY --from=root /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=root /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=builder /app/signoz-mcp-server /app/signoz-mcp-server
+USER 1001:1001
 EXPOSE 8000
-
-# Run the application
-CMD ["./signoz-mcp-server"]
+ENTRYPOINT ["/app/signoz-mcp-server"]
