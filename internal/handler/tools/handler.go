@@ -554,24 +554,6 @@ func (h *Handler) RegisterDashboardHandlers(s *server.MCPServer) {
 		return mcp.NewToolResultText("dashboard updated"), nil
 	})
 
-	// resources for create and update dashboard
-	clickhouseLogsSchemaResource := mcp.NewResource(
-		"signoz://dashboard/clickhouse-schema-for-logs",
-		"ClickHouse Logs Schema",
-		mcp.WithResourceDescription("ClickHouse schema for logs_v2, logs_v2_resource, tag_attributes_v2 and their distributed counterparts. requires dashboard instructions at signoz://dashboard/instructions"),
-		mcp.WithMIMEType("text/plain"),
-	)
-
-	s.AddResource(clickhouseLogsSchemaResource, func(ctx context.Context, req mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
-		return []mcp.ResourceContents{
-			mcp.TextResourceContents{
-				URI:      req.Params.URI,
-				MIMEType: "text/plain",
-				Text:     dashboard.LogsSchema,
-			},
-		}, nil
-	})
-
 	clickhouseLogsExample := mcp.NewResource(
 		"signoz://dashboard/clickhouse-logs-example",
 		"Clickhouse Examples for logs",
@@ -589,23 +571,6 @@ func (h *Handler) RegisterDashboardHandlers(s *server.MCPServer) {
 		}, nil
 	})
 
-	clickhouseMetricsSchemaResource := mcp.NewResource(
-		"signoz://dashboard/clickhouse-schema-for-metrics",
-		"ClickHouse Metrics Schema",
-		mcp.WithResourceDescription("ClickHouse schema for samples_v4, exp_hist, time_series_v4 (and 6hrs/1day variants) and their distributed counterparts. requires dashboard instructions at signoz://dashboard/instructions"),
-		mcp.WithMIMEType("text/plain"),
-	)
-
-	s.AddResource(clickhouseMetricsSchemaResource, func(ctx context.Context, req mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
-		return []mcp.ResourceContents{
-			mcp.TextResourceContents{
-				URI:      req.Params.URI,
-				MIMEType: "text/plain",
-				Text:     dashboard.MetricsSchema,
-			},
-		}, nil
-	})
-
 	clickhouseMetricsExample := mcp.NewResource(
 		"signoz://dashboard/clickhouse-metrics-example",
 		"Clickhouse Examples for Metrics",
@@ -619,23 +584,6 @@ func (h *Handler) RegisterDashboardHandlers(s *server.MCPServer) {
 				URI:      req.Params.URI,
 				MIMEType: "text/plain",
 				Text:     dashboard.ClickhouseSqlQueryForMetrics,
-			},
-		}, nil
-	})
-
-	clickhouseTracesSchemaResource := mcp.NewResource(
-		"signoz://dashboard/clickhouse-schema-for-traces",
-		"ClickHouse Traces Schema",
-		mcp.WithResourceDescription("ClickHouse schema for signoz_index_v3, signoz_spans, signoz_error_index_v2, traces_v3_resource, dependency_graph_minutes_v2, trace_summary, top_level_operations and their distributed counterparts. requires dashboard instructions at signoz://dashboard/instructions"),
-		mcp.WithMIMEType("text/plain"),
-	)
-
-	s.AddResource(clickhouseTracesSchemaResource, func(ctx context.Context, req mcp.ReadResourceRequest) ([]mcp.ResourceContents, error) {
-		return []mcp.ResourceContents{
-			mcp.TextResourceContents{
-				URI:      req.Params.URI,
-				MIMEType: "text/plain",
-				Text:     dashboard.TracesSchema,
 			},
 		}, nil
 	})

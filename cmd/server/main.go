@@ -11,7 +11,6 @@ import (
 	"github.com/hanzoai/o11y-mcp/internal/handler/tools"
 	"github.com/hanzoai/o11y-mcp/internal/logger"
 	mcpserver "github.com/hanzoai/o11y-mcp/internal/mcp-server"
-	"github.com/hanzoai/o11y-mcp/pkg/dashboard"
 )
 
 func main() {
@@ -38,8 +37,6 @@ func main() {
 
 	sigNozClient := client.NewClient(log, cfg.URL, cfg.APIKey)
 	handler := tools.NewHandler(log, sigNozClient, cfg.URL)
-
-	dashboard.InitClickhouseSchema()
 
 	if err := mcpserver.NewMCPServer(log, handler, cfg).Start(); err != nil {
 		log.Fatal(fmt.Sprintf("Failed to start server: %v", err))
