@@ -75,11 +75,11 @@ func TestGetAlertByRuleID(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodGet, r.Method)
-				expectedPath := fmt.Sprintf("/api/v1/rules/%s", tt.ruleID)
+				expectedPath := fmt.Sprintf("/v1/o11y/rules/%s", tt.ruleID)
 				assert.Equal(t, expectedPath, r.URL.Path)
 
 				assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
-				assert.Equal(t, "test-api-key", r.Header.Get("SIGNOZ-API-KEY"))
+				assert.Equal(t, "test-api-key", r.Header.Get("O11Y-API-KEY"))
 
 				w.WriteHeader(tt.statusCode)
 				responseBody, _ := json.Marshal(tt.resp)
@@ -166,10 +166,10 @@ func TestListMetricKeys(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodGet, r.Method)
-				assert.Equal(t, "/api/v1/metrics/filters/keys", r.URL.Path)
+				assert.Equal(t, "/v1/o11y/metrics", r.URL.Path)
 
 				assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
-				assert.Equal(t, "test-api-key", r.Header.Get("SIGNOZ-API-KEY"))
+				assert.Equal(t, "test-api-key", r.Header.Get("O11Y-API-KEY"))
 
 				w.WriteHeader(tt.statusCode)
 				responseBody, _ := json.Marshal(tt.resp)
@@ -286,10 +286,10 @@ func TestListDashboards(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodGet, r.Method)
-				assert.Equal(t, "/api/v1/dashboards", r.URL.Path)
+				assert.Equal(t, "/v1/o11y/dashboards", r.URL.Path)
 
 				assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
-				assert.Equal(t, "test-api-key", r.Header.Get("SIGNOZ-API-KEY"))
+				assert.Equal(t, "test-api-key", r.Header.Get("O11Y-API-KEY"))
 
 				w.WriteHeader(tt.statusCode)
 				responseBody, _ := json.Marshal(tt.resp)
@@ -410,9 +410,9 @@ func TestListServices(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
-				assert.Equal(t, "/api/v1/services", r.URL.Path)
+				assert.Equal(t, "/v1/o11y/services", r.URL.Path)
 				assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
-				assert.Equal(t, "test-api-key", r.Header.Get("SIGNOZ-API-KEY"))
+				assert.Equal(t, "test-api-key", r.Header.Get("O11Y-API-KEY"))
 
 				var requestBody map[string]string
 				err := json.NewDecoder(r.Body).Decode(&requestBody)
@@ -591,11 +591,11 @@ func TestGetAlertHistory(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
-				expectedPath := fmt.Sprintf("/api/v1/rules/%s/history/timeline", tt.ruleID)
+				expectedPath := fmt.Sprintf("/v1/o11y/rules/%s/history/timeline", tt.ruleID)
 				assert.Equal(t, expectedPath, r.URL.Path)
 
 				assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
-				assert.Equal(t, "test-api-key", r.Header.Get("SIGNOZ-API-KEY"))
+				assert.Equal(t, "test-api-key", r.Header.Get("O11Y-API-KEY"))
 
 				var requestBody types.AlertHistoryRequest
 				err := json.NewDecoder(r.Body).Decode(&requestBody)
@@ -762,10 +762,10 @@ func TestQueryBuilderV5(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, http.MethodPost, r.Method)
-				assert.Equal(t, "/api/v5/query_range", r.URL.Path)
+				assert.Equal(t, "/v1/o11y/query_range", r.URL.Path)
 
 				assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
-				assert.Equal(t, "test-api-key", r.Header.Get("SIGNOZ-API-KEY"))
+				assert.Equal(t, "test-api-key", r.Header.Get("O11Y-API-KEY"))
 
 				body, err := io.ReadAll(r.Body)
 				require.NoError(t, err)
@@ -816,9 +816,9 @@ func TestQueryBuilderV5(t *testing.T) {
 func TestCreateDashboard(t *testing.T) {
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPost, r.Method)
-		assert.Equal(t, "/api/v1/dashboards", r.URL.Path)
+		assert.Equal(t, "/v1/o11y/dashboards", r.URL.Path)
 		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
-		assert.Equal(t, "test-api-key", r.Header.Get("SIGNOZ-API-KEY"))
+		assert.Equal(t, "test-api-key", r.Header.Get("O11Y-API-KEY"))
 
 		var body types.Dashboard
 		err := json.NewDecoder(r.Body).Decode(&body)
@@ -857,9 +857,9 @@ func TestCreateDashboard(t *testing.T) {
 func TestUpdateDashboard(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		assert.Equal(t, http.MethodPut, r.Method)
-		assert.Equal(t, "/api/v1/dashboards/id-123", r.URL.Path)
+		assert.Equal(t, "/v1/o11y/dashboards/id-123", r.URL.Path)
 		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
-		assert.Equal(t, "test-api-key", r.Header.Get("SIGNOZ-API-KEY"))
+		assert.Equal(t, "test-api-key", r.Header.Get("O11Y-API-KEY"))
 
 		var body types.Dashboard
 		err := json.NewDecoder(r.Body).Decode(&body)
